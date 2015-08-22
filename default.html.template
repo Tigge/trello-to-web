@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>${title}</title>
+<style type="text/css">
+${css}
+</style>
+</head>
+<body>
+<div id="content" style="max-width: 42em">
+${content}
+</div>
+</body>
+</html>

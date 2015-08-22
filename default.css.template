@@ -1,0 +1,45 @@
+body {
+  width: ${width}px;
+}
+
+hr, section {
+  clear: both
+}
+
+/* Images */
+img {
+  max-width: 100%;
+}
+.rightalign {
+  float: right;
+  padding: 1em 0 1em 1em;
+}
+.leftalign {
+  float: right;
+  padding: 1em 1em 1em 0;
+}
+
+/* Trello color labels */
+section.color-green, section.color-yellow, section.color-orange,
+section.color-red, section.color-purple, section.color-blue {
+  border: 1px solid black;
+  padding: 1em 2em;
+}
+section.color-green {
+  background-color: #DEFA70;
+}
+section.color-yellow {
+  background-color: #FFEB73;
+}
+section.color-orange {
+  background-color: #FFB773;
+}
+section.color-red {
+  background-color: #FF7673;
+}
+section.color-purple {
+  background-color: #D962C7;
+}
+section.color-blue {
+  background-color: #63ADD0;
+}
