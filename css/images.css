@@ -1,0 +1,15 @@
+/* Images */
+img {
+  max-width: 100%;
+}
+.rightalign {
+  float: right;
+  padding: 1em 0 1em 1em;
+}
+.leftalign {
+  float: right;
+  padding: 1em 1em 1em 0;
+}
+hr, section {
+  clear: both
+}

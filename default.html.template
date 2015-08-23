@@ -8,7 +8,7 @@ ${css}
 </style>
 </head>
 <body>
-<div id="content" style="max-width: 42em">
+<div id="content">
 ${content}
 </div>
 </body>

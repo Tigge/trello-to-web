@@ -1,0 +1,21 @@
+{
+    "folder": "output",
+    "basename": "generated",
+    "title": "Generated HTML",
+    "template": "default.html.template",
+    "features": {
+        "width": 600,
+        "lines": true,
+        "labels": true
+    },
+    "extensions": [
+        "markdown.extensions.extra",
+        "markdown.extensions.attr_list",
+        "markdown.extensions.smarty",
+        "markdown_smarttoc"],
+    "css": [
+        "css/base.css",
+        "css/lines.css",
+        "css/labels.css",
+        "css/images.css"]
+}

@@ -1,24 +1,3 @@
-body {
-  width: ${width}px;
-}
-
-hr, section {
-  clear: both
-}
-
-/* Images */
-img {
-  max-width: 100%;
-}
-.rightalign {
-  float: right;
-  padding: 1em 0 1em 1em;
-}
-.leftalign {
-  float: right;
-  padding: 1em 1em 1em 0;
-}
-
 /* Trello color labels */
 section.color-green, section.color-yellow, section.color-orange,
 section.color-red, section.color-purple, section.color-blue {

@@ -1,9 +1,11 @@
 #! /usr/bin/env python3
 
 import argparse
+import json
 import os
 from string import Template
 import sys
+import urllib
 
 import colorama
 import requests
@@ -14,10 +16,21 @@ import utilities
 from trello import Trello
 
 
-OUTPUT_FOLDER = "output"
-OUTPUT_NAME = "generated"
-OUTPUT_WIDTH = 600
-OUTPUT_TITLE = "Generated HTML"
+SETTINGS = json.load(open("settings.json.template", "r"))
+
+
+def get_setting(setting):
+    global SETTINGS
+    return SETTINGS[setting]
+
+
+def load_settings():
+    global SETTINGS
+    try:
+        SETTINGS = json.load(open("settings.json", "r"))
+    except:
+        pass
+
 
 def get_attachment(url):
     url = utilities.fix_google_drive_download_url(url)
@@ -48,7 +61,6 @@ def get_attachment(url):
 
 
 def generate(trello_list):
-
     articles = []
 
     for number, trello_card in enumerate(trello_list, start=1):
@@ -92,51 +104,59 @@ def generate(trello_list):
         articles.append(article)
 
     # Create output folder
-    if not os.path.exists(OUTPUT_FOLDER):
-        os.makedirs(OUTPUT_FOLDER)
+    if not os.path.exists(get_setting("folder")):
+        os.makedirs(get_setting("folder"))
 
     # Generate HTML from Markdown
-    text = ""
+    markdown_text = ""
     for article in articles:
         classes = ""
-        for label in article["labels"]:
-            classes += " " + label
-        text += '<section class="' + classes + '" markdown="1">\n'
-        text += article["content"] + "\n</section>\n\n"
-        if "noline" not in article["labels"]:
-            text += "------------------------------------\n\n"
-    md = markdown.Markdown(
-        extensions=['markdown.extensions.extra', 'markdown.extensions.attr_list', 'markdown.extensions.smarty',
-                    'markdown_smarttoc'],
-        output_format="html5")
-    html = md.convert(text)
-    open(os.path.join(OUTPUT_FOLDER, OUTPUT_NAME + ".md"), "w").write(text)
+        if get_setting("features")["labels"]:
+            for label in article["labels"]:
+                classes += " " + label
+        markdown_text += '<section class="' + classes + '" markdown="1">\n'
+        markdown_text += article["content"] + "\n"
+        markdown_text += "</section>\n\n"
+
+        if get_setting("features")["lines"] and "noline" not in article["labels"]:
+            markdown_text += "------------------------------------\n\n"
+
+    open(os.path.join(get_setting("folder"), get_setting("basename") + ".md"), "w").write(markdown_text)
+
+    markdown_instance = markdown.Markdown(extensions=get_setting("extensions"), output_format="html5")
+    html = markdown_instance.convert(markdown_text)
+
 
     # Save images
     for article in articles:
         for image in article["images"]:
-            image_filename = os.path.join(OUTPUT_FOLDER, image["name"])
+            image_filename = os.path.join(get_setting("folder"), image["name"])
             open(image_filename, "wb").write(image["content"])
-            utilities.fix_image(image_filename, OUTPUT_WIDTH)
+            utilities.fix_image(image_filename, get_setting("features")["width"])
 
     # Generate CSS
-    html_template = Template(open("default.css.template").read())
-    css_generated = html_template.substitute(width=OUTPUT_WIDTH)
+    css_template_content = ""
+    for css_file in get_setting("css"):
+        css_template_content += open(css_file).read()
+    css_template = Template(css_template_content)
+    css_generated = css_template.substitute(width=get_setting("features")["width"])
 
     # Add generated Markdown to HTML template
     html_template = Template(open("default.html.template").read())
-    html_generated = html_template.substitute(title=OUTPUT_TITLE, content=html, css=css_generated)
+    html_generated = html_template.substitute(title=get_setting("title"), content=html, css=css_generated)
 
-    open(os.path.join(OUTPUT_FOLDER, OUTPUT_NAME + ".html"), "w").write(html_generated)
+    open(os.path.join(get_setting("folder"), get_setting("basename") + ".html"), "w").write(html_generated)
 
-    print("\nPreview: file://" + os.path.abspath(os.path.join(OUTPUT_FOLDER, OUTPUT_NAME + ".html")))
+    print("\nPreview: file://" + urllib.request.pathname2url(
+        os.path.abspath(os.path.join(get_setting("folder"), get_setting("basename") + ".html"))))
 
 
 def main():
-
     API_KEY = "443c66695279580563e6aee40eed2811"
 
     colorama.init()
+
+    load_settings()
 
     parser = argparse.ArgumentParser(description='Publish newsletter from Trello list.')
     parser.add_argument('--board', metavar='BOARD', type=str, help='Trello board', required=True)

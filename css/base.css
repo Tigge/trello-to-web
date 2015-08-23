@@ -1,0 +1,9 @@
+@import url(http://fonts.googleapis.com/css?family=Merriweather);
+
+body {
+  width: ${width}px;
+  margin: 3em auto;
+
+  font-family: 'Merriweather', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 16px;
+}
