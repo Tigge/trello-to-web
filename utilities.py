@@ -17,8 +17,8 @@ def fix_image(filename, max_width):
 
 
 def fix_google_drive_download_url(url):
-    url = re.sub(r"https://drive\.google\.com/file/d/(.*?)/view\?usp=.*",
-                 r"https://docs.google.com/uc?authuser=0&id=\1&export=download", url)
+    url = re.sub(r"https://drive\.google\.com/(?:a/.*){0,1}file/d/(.*?)/view\?usp=.*",
+                 r"https://drive.google.com/uc?authuser=0&id=\1&export=download", url)
     return url
 
 
