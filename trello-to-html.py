@@ -109,7 +109,7 @@ def generate(trello_list):
 
     # Generate HTML from Markdown
     markdown_text = ""
-    for article in articles:
+    for index, article in enumerate(articles):
         classes = ""
         if get_setting("features")["labels"]:
             classes = " ".join(article["labels"])
@@ -117,7 +117,7 @@ def generate(trello_list):
         markdown_text += article["content"] + "\n"
         markdown_text += "</section>\n\n"
 
-        if get_setting("features")["lines"] and "noline" not in article["labels"]:
+        if get_setting("features")["lines"] and "noline" not in article["labels"] and index != len(articles) - 1:
             markdown_text += "------------------------------------\n\n"
 
     open(os.path.join(get_setting("folder"), get_setting("basename") + ".md"), "w").write(markdown_text)
