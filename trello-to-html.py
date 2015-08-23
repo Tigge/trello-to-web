@@ -112,8 +112,7 @@ def generate(trello_list):
     for article in articles:
         classes = ""
         if get_setting("features")["labels"]:
-            for label in article["labels"]:
-                classes += " " + label
+            classes = " ".join(article["labels"])
         markdown_text += '<section class="' + classes + '" markdown="1">\n'
         markdown_text += article["content"] + "\n"
         markdown_text += "</section>\n\n"
