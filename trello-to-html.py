@@ -137,7 +137,7 @@ def generate(trello_list):
     # Generate CSS
     css_template_content = ""
     for css_file in get_setting("css"):
-        css_template_content += open(css_file).read()
+        css_template_content += open(css_file).read() + "\n\n"
     css_template = Template(css_template_content)
     css_generated = css_template.substitute(width=get_setting("features")["width"])
 

@@ -2,8 +2,29 @@
 
 body {
   width: ${width}px;
-  margin: 3em auto;
+  margin: 2em auto;
 
   font-family: 'Merriweather', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
   font-size: 16px;
+  line-height: 1.5;
+}
+
+a {
+  color: #555;
+}
+
+a:visited {
+  color: #aaa;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+h3 {
+  font-size: 20px
 }
