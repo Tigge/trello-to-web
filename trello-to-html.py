@@ -125,7 +125,6 @@ def generate(trello_list):
     markdown_instance = markdown.Markdown(extensions=get_setting("extensions"), output_format="html5")
     html = markdown_instance.convert(markdown_text)
 
-
     # Save images
     for article in articles:
         for image in article["images"]:
@@ -141,7 +140,7 @@ def generate(trello_list):
     css_generated = css_template.substitute(width=get_setting("features")["width"])
 
     # Add generated Markdown to HTML template
-    html_template = Template(open("default.html.template").read())
+    html_template = Template(open(get_setting("template")).read())
     html_generated = html_template.substitute(title=get_setting("title"), content=html, css=css_generated)
 
     open(os.path.join(get_setting("folder"), get_setting("basename") + ".html"), "w").write(html_generated)
@@ -151,8 +150,6 @@ def generate(trello_list):
 
 
 def main():
-    API_KEY = "443c66695279580563e6aee40eed2811"
-
     colorama.init()
 
     load_settings()
@@ -164,7 +161,7 @@ def main():
     group.add_argument('--publish', metavar='LIST', type=str, help='publish Trello list')
     args = parser.parse_args()
 
-    trello = Trello(API_KEY)
+    trello = Trello("443c66695279580563e6aee40eed2811")
 
     # Read or generate token
     try:
