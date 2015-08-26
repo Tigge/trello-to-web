@@ -108,17 +108,16 @@ def generate(trello_list):
         os.makedirs(get_setting("folder"))
 
     # Generate HTML from Markdown
+    html_section_template = Template(open(get_setting("template-section")).read())
     markdown_text = ""
     for index, article in enumerate(articles):
-        classes = ""
+        labels = ""
         if get_setting("features")["labels"]:
-            classes = " ".join(article["labels"])
-        markdown_text += '<section class="' + classes + '" markdown="1">\n'
-        markdown_text += article["content"] + "\n"
-        markdown_text += "</section>\n\n"
+            labels = " ".join(article["labels"])
 
+        markdown_text += html_section_template.substitute(content=article["content"], labels=labels)
         if get_setting("features")["lines"] and "noline" not in article["labels"] and index != len(articles) - 1:
-            markdown_text += "------------------------------------\n\n"
+            markdown_text += html_section_template.substitute(content="\n\n---\n\n", labels="")
 
     open(os.path.join(get_setting("folder"), get_setting("basename") + ".md"), "w").write(markdown_text)
 

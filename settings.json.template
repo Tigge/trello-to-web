@@ -2,7 +2,8 @@
     "folder": "output",
     "basename": "generated",
     "title": "Generated HTML",
-    "template": "default.html.template",
+    "template": "html/default.html",
+    "template-section": "html/default-section.html",
     "features": {
         "width": 600,
         "lines": true,
@@ -14,7 +15,7 @@
         "markdown.extensions.smarty",
         "markdown_smarttoc"],
     "css": [
-        "css/base.css",
+        "css/default-base.css",
         "css/lines.css",
         "css/labels.css",
         "css/images.css"]
