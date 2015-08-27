@@ -1,31 +1,30 @@
 /* Trello color labels */
-section.color-green, section.color-yellow, section.color-orange,
-section.color-red, section.color-purple, section.color-blue {
+.color-green, .color-yellow, .color-orange, .color-red, .color-purple, .color-blue {
   border: 1px solid gray;
   padding: 1em 2em;
   border-radius: 6px;
 }
-section.color-green {
+.color-green {
   background-color: #dff0d8;
   border-color: #93a48c;
 }
-section.color-yellow {
+.color-yellow {
   background-color: #fcf8e3;
   border-color: #b0ac97;
 }
-section.color-orange {
+.color-orange {
   background-color: #f8e9c5;
   border-color: #ac9d79;
 }
-section.color-red {
+.color-red {
   background-color: #f2dede;
   border-color: #a69292;
 }
-section.color-purple {
+.color-purple {
   background-color: #ede2f2;
   border-color: #a196a6;
 }
-section.color-blue {
+.color-blue {
   background-color: #d9edf7;
   border-color: #8da1ab;
 }
