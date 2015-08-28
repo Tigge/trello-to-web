@@ -5,7 +5,6 @@ import json
 import mimetypes
 import smtplib
 import os
-import premailer
 
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
