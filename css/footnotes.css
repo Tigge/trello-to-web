@@ -1,0 +1,7 @@
+div.footnote hr {
+  display: none;
+}
+
+div.footnote {
+  font-size: 13px;
+}

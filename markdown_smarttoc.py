@@ -5,21 +5,20 @@ __author__ = 'tigge'
 
 
 class SmartTocTreeporcessor(markdown.treeprocessors.Treeprocessor):
-
-    def __init__(self):
+    def __init__(self, md):
+        super(SmartTocTreeporcessor, self).__init__(md)
         self.running = False
         self.headers = []
 
-
     def collect_headers(self, element, indent=0):
-        if element.tag == "p" and element.text == "[[toc]]":
+        if element.tag == "p" and element.text == "${toc}":
             self.running = True
         if element.tag == "h1" and self.running:
             element.attrib["id"] = "toc-" + str(len(self.headers))
             self.headers.append({"anchor": element.attrib["id"], "text": element.text})
 
         for child in element:
-            self.collect_headers(child, indent=indent+1)
+            self.collect_headers(child, indent=indent + 1)
 
     def build_toc(self):
         root = etree.Element("div")
@@ -31,27 +30,24 @@ class SmartTocTreeporcessor(markdown.treeprocessors.Treeprocessor):
             a.text = header["text"]
         return root
 
-    def insert_toc(self, element, parent, index):
-
-        if element.tag == "p" and element.text == "[[toc]]":
-            parent[index] = self.build_toc()
-
-        for index, child in enumerate(element):
-            self.insert_toc(child, element, index)
-
     def run(self, root):
         self.collect_headers(root)
-        self.insert_toc(root, None, 0)
+
+        # Generate table of contents
+        toc = self.markdown.serializer(self.build_toc())
+        for postprocessor in self.markdown.postprocessors.values():
+            toc = postprocessor.run(toc)
+        self.markdown.toc = toc
 
 
 class SmartTocExtension(markdown.Extension):
-
     def __init__(self, *args, **kwargs):
         super(SmartTocExtension, self).__init__(*args, **kwargs)
 
     def extendMarkdown(self, md, md_globals):
         md.registerExtension(self)
-        md.treeprocessors.add("toc", SmartTocTreeporcessor(), "_end")
+        treeprocessor = SmartTocTreeporcessor(md)
+        md.treeprocessors.add("toc", treeprocessor, "_end")
 
 
 def makeExtension(*args, **kwargs):

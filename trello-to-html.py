@@ -119,22 +119,23 @@ def generate(trello_list):
     if not os.path.exists(get_setting("folder")):
         os.makedirs(get_setting("folder"))
 
-    # Generate HTML from Markdown
+
+    # Generate html from articles
     html_section_template = Template(open(get_setting("template-section")).read())
-    markdown_text = ""
+    markdown_instance = markdown.Markdown(extensions=get_setting("extensions"), output_format="html5")
+    html = ""
     for index, article in enumerate(articles):
         labels = ""
         if get_setting("features")["labels"]:
             labels = " ".join(article["labels"])
 
-        markdown_text += html_section_template.substitute(content=article["content"], labels=labels)
+        open(os.path.join(get_setting("folder"), str(index) + ".md"), "w").write(article["content"])
+        article_html = markdown_instance.reset().convert(article["content"])
+        html += html_section_template.substitute(content=article_html, labels=labels)
+
         if get_setting("features")["lines"] and "noline" not in article["labels"] and index != len(articles) - 1:
-            markdown_text += html_section_template.substitute(content="\n\n---\n\n", labels="")
-
-    open(os.path.join(get_setting("folder"), get_setting("basename") + ".md"), "w").write(markdown_text)
-
-    markdown_instance = markdown.Markdown(extensions=get_setting("extensions"), output_format="html5")
-    html = markdown_instance.convert(markdown_text)
+            line_html = markdown_instance.reset().convert("\n\n---\n\n")
+            html += html_section_template.substitute(content=line_html, labels="")
 
     # Save images
     for article in articles:
@@ -151,8 +152,13 @@ def generate(trello_list):
     # Add generated Markdown to HTML template
     html_template = Template(open(get_setting("template")).read())
     html_generated = html_template.safe_substitute(title=get_setting("title"), content=html, css=css_generated)
+
     result_template = Template(html_generated)
-    result_generated = result_template.substitute(title=get_setting("title"), width=get_setting("features")["width"])
+    extra_args = {}
+    if "markdown_smarttoc" in get_setting("extensions"):
+        extra_args["toc"] = markdown_instance.toc
+    result_generated = result_template.substitute(title=get_setting("title"), width=get_setting("features")["width"],
+                                                  **extra_args)
 
     # Run premailer
     if get_setting("features")["premailer"]:

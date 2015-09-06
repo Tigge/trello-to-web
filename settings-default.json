@@ -20,7 +20,8 @@
     "css/default-base.css",
     "css/lines.css",
     "css/labels.css",
-    "css/images.css"
+    "css/images.css",
+    "css/footnotes.css"
   ],
   "mail": {
     "from": "from@mail.com",
