@@ -7,7 +7,8 @@
   "features": {
     "width": 600,
     "lines": true,
-    "labels": true
+    "labels": true,
+    "premailer": true
   },
   "extensions": [
     "markdown.extensions.extra",

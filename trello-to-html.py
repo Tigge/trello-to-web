@@ -12,6 +12,7 @@ import multiprocessing
 import requests
 import markdown
 import rfc6266
+import premailer
 
 import utilities
 from trello import Trello
@@ -152,6 +153,13 @@ def generate(trello_list):
     html_generated = html_template.safe_substitute(title=get_setting("title"), content=html, css=css_generated)
     result_template = Template(html_generated)
     result_generated = result_template.substitute(title=get_setting("title"), width=get_setting("features")["width"])
+
+    # Run premailer
+    if get_setting("features")["premailer"]:
+        open(os.path.join(get_setting("folder"), get_setting("basename") + "-orignal.html"), "w").write(
+            result_generated)
+        premail_instance = premailer.Premailer(result_generated, keep_style_tags=True)
+        result_generated = premail_instance.transform()
 
     open(os.path.join(get_setting("folder"), get_setting("basename") + ".html"), "w").write(result_generated)
 
