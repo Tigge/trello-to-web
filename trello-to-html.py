@@ -8,6 +8,7 @@ import sys
 import urllib.request
 
 import colorama
+import multiprocessing
 import requests
 import markdown
 import rfc6266
@@ -60,48 +61,58 @@ def get_attachment(url):
     return attachment
 
 
+def get_artice(trello_card):
+    article = {
+        "title": trello_card["name"],
+        "content": "",
+        "images": [],
+        "labels": []
+    }
+
+    # Add content
+    for trello_attachment in trello_card["attachments"]:
+        attachment = get_attachment(trello_attachment["url"])
+        if attachment["mime"].startswith("text/"):
+            article["content"] += attachment["content"]
+        else:
+            article["images"].append(attachment)
+
+    # Fallback on description
+    if article["content"] == "":
+        article["content"] = trello_card["desc"]
+
+    if article["content"] == "":
+        return None
+
+    # Add labels
+    for label in trello_card["labels"]:
+        article["labels"].append(label["name"] if label["name"] != "" else "color-" + label["color"])
+
+    return article
+
+
 def generate(trello_list):
     articles = []
 
-    for number, trello_card in enumerate(trello_list, start=1):
+    pool = multiprocessing.Pool(processes=10)
+    articles = pool.map(get_artice, trello_list)
 
+    # Print status
+    for number, (trello_card, article) in enumerate(zip(trello_list, articles), start=1):
         print("\n" + str(number) + ".", trello_card["name"] + ":")
 
-        article = {
-            "title": trello_card["name"],
-            "content": "",
-            "images": [],
-            "labels": []
-        }
-
-        # Add content
-        for trello_attachment in trello_card["attachments"]:
-
-            attachment = get_attachment(trello_attachment["url"])
-
-            if attachment["mime"].startswith("text/"):
-                article["content"] += attachment["content"]
-                print(" - Markdown from", attachment["url"])
-            else:
-                article["images"].append(attachment)
-                print(" - Image from file", attachment["url"])
-
-        # Fallback on description
-        if article["content"] == "":
-            article["content"] = trello_card["desc"]
-
-        if article["content"] == "":
+        if article is None:
             print(" - Status:", colorama.Fore.RED + "Warning (no content)", colorama.Fore.RESET)
             continue
 
-        # Add labels
-        for label in trello_card["labels"]:
-            article["labels"].append(label["name"] if label["name"] != "" else "color-" + label["color"])
-
-        print(" - Labels:", colorama.Fore.MAGENTA + ", ".join(article["labels"]), colorama.Fore.RESET)
+        images_str = ", ".join(map(lambda x: x["name"], article["images"]))
+        print(" - Images:", colorama.Fore.CYAN + images_str, colorama.Fore.RESET)
+        labels_str = ", ".join(article["labels"])
+        print(" - Labels:", colorama.Fore.MAGENTA + labels_str, colorama.Fore.RESET)
         print(" - Status:", colorama.Fore.GREEN + "Ok", colorama.Fore.RESET)
 
-        articles.append(article)
+    # Remove empty articles
+    articles = list(filter(None, articles))
 
     # Create output folder
     if not os.path.exists(get_setting("folder")):
