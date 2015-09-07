@@ -178,11 +178,11 @@ def main():
 
     load_settings()
 
-    parser = argparse.ArgumentParser(description='Publish newsletter from Trello list.')
+    parser = argparse.ArgumentParser(description='Convert Trello list to web page.')
     parser.add_argument('--board', metavar='BOARD', type=str, help='Trello board', required=True)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--list', action='store_true', help='show Trello lists')
-    group.add_argument('--publish', metavar='LIST', type=str, help='publish Trello list')
+    group.add_argument('--convert', metavar='LIST', type=str, help='convert Trello list')
     args = parser.parse_args()
 
     trello = Trello("443c66695279580563e6aee40eed2811")
@@ -191,8 +191,8 @@ def main():
     try:
         trello.set_token(open(".token", "r").read())
     except:
-        print("Go to", trello.get_token_url("Newsletter"), "and authorize the application. After you have authorized",
-              "the application you'll be given a token. Copy and paste that here", "\n")
+        print("Go to", trello.get_token_url("trello-to-html"), "and authorize the application. After you have"
+              "authorized the application you'll be given a token. Copy and paste that here", "\n")
         trello.set_token(input("Enter your token: "))
         open(".token", "w").write(trello.get_token())
 
@@ -203,12 +203,12 @@ def main():
             print(trello_list["name"])
         return 0
 
-    # Publish Trello list
-    elif args.publish is not None:
+    # Convert Trello list
+    elif args.convert is not None:
         trello_lists = trello.boards_get_list_open(args.board)
         for trello_list in trello_lists:
-            if trello_list["name"] == args.publish:
-                print("Publishing", trello_list["name"])
+            if trello_list["name"] == args.convert:
+                print("Converting", trello_list["name"])
                 trello_list = trello.list_get_cards(trello_list["id"])
                 generate(trello_list)
                 return 0
