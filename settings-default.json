@@ -21,5 +21,14 @@
     "css/lines.css",
     "css/labels.css",
     "css/images.css"
-  ]
+  ],
+  "mail": {
+    "from": "from@mail.com",
+    "smtp": {
+      "server": "smtp.gmail.com",
+      "port": 587,
+      "username": "username",
+      "password": "password"
+    }
+  }
 }
