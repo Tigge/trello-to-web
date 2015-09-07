@@ -16,7 +16,7 @@ import utilities
 from trello import Trello
 
 
-SETTINGS = json.load(open("settings.json.template", "r"))
+SETTINGS = json.load(open("settings-default.json", "r"))
 
 
 def get_setting(setting):
@@ -28,7 +28,7 @@ def load_settings():
     global SETTINGS
     try:
         SETTINGS = json.load(open("settings.json", "r"))
-    except:
+    except IOError:
         pass
 
 
