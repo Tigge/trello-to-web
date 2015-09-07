@@ -5,7 +5,7 @@ import json
 import os
 from string import Template
 import sys
-import urllib
+import urllib.request
 
 import colorama
 import requests
@@ -132,17 +132,17 @@ def generate(trello_list):
             utilities.fix_image(image_filename, get_setting("features")["width"])
 
     # Generate CSS
-    css_template_content = ""
+    css_generated = ""
     for css_file in get_setting("css"):
-        css_template_content += open(css_file).read() + "\n\n"
-    css_template = Template(css_template_content)
-    css_generated = css_template.substitute(width=get_setting("features")["width"])
+        css_generated += open(css_file).read() + "\n\n"
 
     # Add generated Markdown to HTML template
     html_template = Template(open(get_setting("template")).read())
-    html_generated = html_template.substitute(title=get_setting("title"), content=html, css=css_generated)
+    html_generated = html_template.safe_substitute(title=get_setting("title"), content=html, css=css_generated)
+    result_template = Template(html_generated)
+    result_generated = result_template.substitute(title=get_setting("title"), width=get_setting("features")["width"])
 
-    open(os.path.join(get_setting("folder"), get_setting("basename") + ".html"), "w").write(html_generated)
+    open(os.path.join(get_setting("folder"), get_setting("basename") + ".html"), "w").write(result_generated)
 
     print("\nPreview: file://" + urllib.request.pathname2url(
         os.path.abspath(os.path.join(get_setting("folder"), get_setting("basename") + ".html"))))
