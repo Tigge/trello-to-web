@@ -15,29 +15,26 @@ class SmartTocTreeporcessor(markdown.treeprocessors.Treeprocessor):
             self.running = True
         if element.tag == "h1" and self.running:
             element.attrib["id"] = "toc-" + str(len(self.headers))
-            self.headers.append({"anchor": element.attrib["id"], "text": element.text})
+            text = element.text
+            for postprocessor in self.markdown.postprocessors.values():
+                text = postprocessor.run(text)
+            self.headers.append({"anchor": element.attrib["id"], "text": text})
 
         for child in element:
             self.collect_headers(child, indent=indent + 1)
 
     def build_toc(self):
-        root = etree.Element("div")
-        root.attrib["class"] = "toc"
-        ul = etree.SubElement(root, "ul")
+        string = '<div class="toc">\n'
+        string += ' <ul>\n'
         for header in self.headers:
-            li = etree.SubElement(ul, "li")
-            a = etree.SubElement(li, "a", href="#" + header["anchor"])
-            a.text = header["text"]
-        return root
+            string += '  <li><a href="#{0}">{1}</a></li>'.format(header["anchor"], header["text"])
+        string += ' </ul>\n'
+        string += '</div>'
+        return string
 
     def run(self, root):
         self.collect_headers(root)
-
-        # Generate table of contents
-        toc = self.markdown.serializer(self.build_toc())
-        for postprocessor in self.markdown.postprocessors.values():
-            toc = postprocessor.run(toc)
-        self.markdown.toc = toc
+        self.markdown.toc = self.build_toc()
 
 
 class SmartTocExtension(markdown.Extension):
