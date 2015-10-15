@@ -119,10 +119,10 @@ def generate(trello_list):
     if not os.path.exists(get_setting("folder")):
         os.makedirs(get_setting("folder"))
 
-
     # Generate html from articles
     html_section_template = Template(open(get_setting("template-section")).read())
-    markdown_instance = markdown.Markdown(extensions=get_setting("extensions"), output_format="html5")
+    markdown_instance = markdown.Markdown(extensions=list(get_setting("extensions")),
+                                          extension_configs=get_setting("extensions"), output_format="html5")
     html = ""
     for index, article in enumerate(articles):
         labels = ""

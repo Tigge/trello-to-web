@@ -10,12 +10,15 @@
     "labels": true,
     "premailer": true
   },
-  "extensions": [
-    "markdown.extensions.extra",
-    "markdown.extensions.attr_list",
-    "markdown.extensions.smarty",
-    "markdown_smarttoc"
-  ],
+  "extensions": {
+    "markdown.extensions.tables": {},
+    "markdown.extensions.footnotes": {
+      "UNIQUE_IDS": true
+    },
+    "markdown.extensions.attr_list": {},
+    "markdown.extensions.smarty": {},
+    "markdown_smarttoc": {}
+  },
   "css": [
     "css/default-base.css",
     "css/lines.css",
