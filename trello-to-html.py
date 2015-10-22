@@ -190,7 +190,8 @@ def main():
     # Read or generate token
     try:
         trello.set_token(open(".token", "r").read())
-    except:
+        trello.user_get("me")
+    except Exception as e:
         print("Go to", trello.get_token_url("trello-to-html"), "and authorize the application. After you have"
               "authorized the application you'll be given a token. Copy and paste that here", "\n")
         trello.set_token(input("Enter your token: "))

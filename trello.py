@@ -27,6 +27,9 @@ class Trello:
     def get_token_url(self, name):
         return "{0}authorize?key={1}&name={2}&expiration=30days&response_type=token".format(self._APIURL, self._apikey, name)
 
+    def user_get(self, user):
+        return self._fetch("members/{0}".format(user))
+
     def boards_get_list(self, board):
         return self._fetch("board/{0}/lists".format(board))
 
