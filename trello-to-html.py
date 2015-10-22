@@ -42,6 +42,9 @@ def get_attachment(url):
     mimetype = response.headers.get("content-type").lower().split(";")[0].strip()
     filename = rfc6266.parse_requests_response(response).filename_unsafe
 
+    if "X-Auto-Login" in response.headers:
+        raise Exception("Login needed for {0}".format(url))
+
     if not mimetype.startswith("text/") and not mimetype.startswith("image/"):
         raise Exception("Unhandled file type {0}, {1}, {2}".format(url, mimetype, filename))
 
