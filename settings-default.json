@@ -17,7 +17,8 @@
     },
     "markdown.extensions.attr_list": {},
     "markdown.extensions.smarty": {},
-    "markdown_smarttoc": {}
+    "markdown_smarttoc": {},
+    "markdown_imaged": {}
   },
   "css": [
     "css/default-base.css",
