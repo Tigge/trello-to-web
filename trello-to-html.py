@@ -6,32 +6,15 @@ import os
 from string import Template
 import sys
 import urllib.request
-
 import colorama
 import multiprocessing
 import requests
 import markdown
 import rfc6266
 import premailer
-
 import utilities
+import settings
 from trello import Trello
-
-
-SETTINGS = json.load(open("settings-default.json", "r"))
-
-
-def get_setting(setting):
-    global SETTINGS
-    return SETTINGS[setting]
-
-
-def load_settings():
-    global SETTINGS
-    try:
-        SETTINGS = json.load(open("settings.json", "r"))
-    except IOError:
-        pass
 
 
 def get_attachment(url):
@@ -119,67 +102,65 @@ def generate(trello_list):
     articles = list(filter(None, articles))
 
     # Create output folder
-    if not os.path.exists(get_setting("folder")):
-        os.makedirs(get_setting("folder"))
+    if not os.path.exists(settings.get("folder")):
+        os.makedirs(settings.get("folder"))
 
     # Generate html from articles
-    html_section_template = Template(open(get_setting("template-section")).read())
-    markdown_instance = markdown.Markdown(extensions=list(get_setting("extensions")),
-                                          extension_configs=get_setting("extensions"), output_format="html5")
+    html_section_template = Template(open(settings.get("template-section")).read())
+    markdown_instance = markdown.Markdown(extensions=list(settings.get("extensions")),
+                                          extension_configs=settings.get("extensions"), output_format="html5")
     html = ""
     for index, article in enumerate(articles):
         labels = ""
-        if get_setting("features")["labels"]:
+        if settings.get("features")["labels"]:
             labels = " ".join(article["labels"])
 
-        open(os.path.join(get_setting("folder"), str(index) + ".md"), "w").write(article["content"])
+        open(os.path.join(settings.get("folder"), str(index) + ".md"), "w").write(article["content"])
         article_html = markdown_instance.reset().convert(article["content"])
         html += html_section_template.substitute(content=article_html, labels=labels)
 
-        if get_setting("features")["lines"] and "noline" not in article["labels"] and index != len(articles) - 1:
+        if settings.get("features")["lines"] and "noline" not in article["labels"] and index != len(articles) - 1:
             line_html = markdown_instance.reset().convert("\n\n---\n\n")
             html += html_section_template.substitute(content=line_html, labels="")
 
     # Save images
     for article in articles:
         for image in article["images"]:
-            image_filename = os.path.join(get_setting("folder"), image["name"])
+            image_filename = os.path.join(settings.get("folder"), image["name"])
             open(image_filename, "wb").write(image["content"])
-            utilities.fix_image(image_filename, get_setting("features")["width"])
+            utilities.fix_image(image_filename, settings.get("features")["width"])
 
     # Generate CSS
     css_generated = ""
-    for css_file in get_setting("css"):
+    for css_file in settings.get("css"):
         css_generated += open(css_file).read() + "\n\n"
 
     # Add generated Markdown to HTML template
-    html_template = Template(open(get_setting("template")).read())
-    html_generated = html_template.safe_substitute(title=get_setting("title"), content=html, css=css_generated)
+    html_template = Template(open(settings.get("template")).read())
+    html_generated = html_template.safe_substitute(title=settings.get("title"), content=html, css=css_generated)
 
     result_template = Template(html_generated)
     extra_args = {}
-    if "markdown_smarttoc" in get_setting("extensions"):
+    if "markdown_smarttoc" in settings.get("extensions"):
         extra_args["toc"] = markdown_instance.toc
-    result_generated = result_template.substitute(title=get_setting("title"), width=get_setting("features")["width"],
+    result_generated = result_template.substitute(title=settings.get("title"), width=settings.get("features")["width"],
                                                   **extra_args)
 
     # Run premailer
-    if get_setting("features")["premailer"]:
-        open(os.path.join(get_setting("folder"), get_setting("basename") + "-orignal.html"), "w").write(
+    if settings.get("features")["premailer"]:
+        open(os.path.join(settings.get("folder"), settings.get("basename") + "-orignal.html"), "w").write(
             result_generated)
         premail_instance = premailer.Premailer(result_generated, keep_style_tags=True)
         result_generated = premail_instance.transform()
 
-    open(os.path.join(get_setting("folder"), get_setting("basename") + ".html"), "w").write(result_generated)
+    open(os.path.join(settings.get("folder"), settings.get("basename") + ".html"), "w").write(result_generated)
 
     print("\nPreview: file://" + urllib.request.pathname2url(
-        os.path.abspath(os.path.join(get_setting("folder"), get_setting("basename") + ".html"))))
+        os.path.abspath(os.path.join(settings.get("folder"), settings.get("basename") + ".html"))))
 
 
 def main():
     colorama.init()
-
-    load_settings()
 
     parser = argparse.ArgumentParser(description='Convert Trello list to web page.')
     parser.add_argument('--board', metavar='BOARD', type=str, help='Trello board', required=True)

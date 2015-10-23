@@ -5,7 +5,7 @@ import json
 import mimetypes
 import smtplib
 import os
-
+import settings
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
@@ -16,21 +16,7 @@ __author__ = 'tigge'
 SETTINGS = json.load(open("settings-default.json", "r"))
 
 
-def get_setting(setting):
-    global SETTINGS
-    return SETTINGS[setting]
-
-
-def load_settings():
-    global SETTINGS
-    try:
-        SETTINGS = json.load(open("settings.json", "r"))
-    except IOError:
-        pass
-
-
 def generate_message(folder, mail_subject, mail_from, mail_to):
-
     message = MIMEMultipart()
     message['Subject'] = mail_subject
     message['From'] = mail_from
@@ -70,18 +56,15 @@ def send_message(message, smtp_server, smtp_port, smtp_username, smtp_password):
 
 
 def main():
-
-    load_settings()
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--subject", required=True)
     parser.add_argument("--to", required=True)
 
     args = parser.parse_args()
 
-    message = generate_message(get_setting("folder"), args.subject, get_setting("mail")["from"], args.to)
-    send_message(message, get_setting("mail")["smtp"]["server"], get_setting("mail")["smtp"]["port"],
-                 get_setting("mail")["smtp"]["username"], get_setting("mail")["smtp"]["password"])
+    message = generate_message(settings.get("folder"), args.subject, settings.get("mail")["from"], args.to)
+    send_message(message, settings.get("mail")["smtp"]["server"], settings.get("mail")["smtp"]["port"],
+                 settings.get("mail")["smtp"]["username"], settings.get("mail")["smtp"]["password"])
 
 
 if __name__ == "__main__":
