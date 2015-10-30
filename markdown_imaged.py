@@ -1,10 +1,10 @@
-import urllib.parse
 import os.path
+import urllib.parse
 
 import requests
 
 import settings
-
+import utilities
 from markdown import Extension
 from markdown.inlinepatterns import ImagePattern, IMAGE_LINK_RE
 
@@ -19,6 +19,7 @@ class ImageDownloadPattern(ImagePattern):
             with open(os.path.join(settings.get("folder"), filename), "wb") as f:
                 f.write(response.content)
                 el.attrib["src"] = filename
+            utilities.fix_image(os.path.join(settings.get("folder"), filename), settings.get("features")["width"])
         return el
 
 
