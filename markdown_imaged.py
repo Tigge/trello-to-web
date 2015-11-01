@@ -2,6 +2,7 @@ import os.path
 import urllib.parse
 
 import requests
+import rfc6266
 
 import settings
 import utilities
@@ -16,7 +17,7 @@ class ImageDownloadPattern(ImagePattern):
         if urlparts.netloc:
             response = requests.get(urlparts.geturl())
             response.raise_for_status()
-            filename = os.path.basename(urlparts.path)
+            filename = rfc6266.parse_requests_response(response).filename_unsafe
             with open(os.path.join(settings.get("folder"), filename), "wb") as f:
                 f.write(response.content)
                 el.attrib["src"] = filename
