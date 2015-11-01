@@ -15,6 +15,7 @@ class ImageDownloadPattern(ImagePattern):
         urlparts = urllib.parse.urlparse(el.attrib["src"])
         if urlparts.netloc:
             response = requests.get(urlparts.geturl())
+            response.raise_for_status()
             filename = os.path.basename(urlparts.path)
             with open(os.path.join(settings.get("folder"), filename), "wb") as f:
                 f.write(response.content)

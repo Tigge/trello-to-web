@@ -22,6 +22,7 @@ def get_attachment(url):
     url = utilities.fix_dropbox_download_url(url)
 
     response = requests.get(url)
+    response.raise_for_status()
     mimetype = response.headers.get("content-type").lower().split(";")[0].strip()
     filename = rfc6266.parse_requests_response(response).filename_unsafe
 
