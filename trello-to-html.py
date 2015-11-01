@@ -116,7 +116,7 @@ def generate(trello_list):
         if settings.get("features")["labels"]:
             labels = " ".join(article["labels"])
 
-        open(os.path.join(settings.get("folder"), str(index) + ".md"), "w").write(article["content"])
+        open(os.path.join(settings.get("folder"), ".t2w-temp-" + str(index) + ".md"), "w").write(article["content"])
         article_html = markdown_instance.reset().convert(article["content"])
         html += html_section_template.substitute(content=article_html, labels=labels)
 
@@ -149,8 +149,8 @@ def generate(trello_list):
 
     # Run premailer
     if settings.get("features")["premailer"]:
-        open(os.path.join(settings.get("folder"), settings.get("basename") + "-orignal.html"), "w").write(
-            result_generated)
+        open(os.path.join(settings.get("folder"), ".t2w-temp-" + settings.get("basename") + "-orignal.html"),
+             "w").write(result_generated)
         premail_instance = premailer.Premailer(result_generated, keep_style_tags=True)
         result_generated = premail_instance.transform()
 
