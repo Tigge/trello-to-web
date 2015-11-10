@@ -144,8 +144,8 @@ def generate(trello_list):
     extra_args = {}
     if "markdown_smarttoc" in settings.get("extensions"):
         extra_args["toc"] = markdown_instance.toc
-    result_generated = result_template.substitute(title=settings.get("title"), width=settings.get("features")["width"],
-                                                  **extra_args)
+    result_generated = result_template.safe_substitute(title=settings.get("title"),
+                                                       width=settings.get("features")["width"], **extra_args)
 
     # Run premailer
     if settings.get("features")["premailer"]:
